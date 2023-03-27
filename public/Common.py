@@ -1,6 +1,8 @@
 import os
+import re
 import time
 import unittest
+from logzero import logger
 from selenium import webdriver
 from public.HTMLTestReport import HTMLTestRunner    
 
@@ -78,3 +80,26 @@ class RunCases:
             runner = HTMLTestRunner(stream=file, title='WEB-UI自动化测试报告', description='用例执行情况：')
             runner.run(cases)
             file.close()
+        result = self.get_report_info()
+        logger.info(result)
+        return result    
+
+    def get_report_info(self):
+        report = self.file_name
+        result = {}
+        with open(report, 'r', encoding='utf-8') as f:
+            res_str = re.findall("测试结果(.+%)", f.read())
+            if res_str:
+                res = re.findall(r"\d+", res_str[0])
+                result["sum"] = res[0]
+                result["pass"] = res[1]
+                result['fail'] = res[2]
+                result['error'] = res[3]
+                result['passrate'] = re.findall('通过率 = (.+%)', res_str[0])[0]
+            else:
+                raise Exception("解析报告异常")
+            f.close()
+        with open(report, 'r', encoding='utf-8') as f:
+            result['duration'] = re.findall("合计耗时 : </strong> (.+)</p>", f.read())[0].split('.')[0]
+            f.close()
+        return result        
