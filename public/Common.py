@@ -25,12 +25,9 @@ class Driver():
                 self.driver = webdriver.Edge()        
             case _:
                  raise('{} is undefined'.format(browser))   
-        self.reportRoot = os.path.join(os.getcwd(), 'report')
-        if not os.path.exists(self.reportRoot):
-            os.mkdir(self.reportRoot)
-        self.reportPath = os.path.join(self.reportRoot, report_time)
-        if not os.path.exists(self.reportPath):
-            os.mkdir(self.reportPath)
+        
+        self.reportRoot = Method.make_path(os.path.join(os.getcwd(), 'report'))
+        self.reportPath = Method.make_path(os.path.join(self.reportRoot, report_time))
 
     def screenshot(self, name):
         date_time = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
@@ -40,6 +37,14 @@ class Driver():
         print('IMAGE:{}'.format(screenshot))
         return screenshot
 
+class Method:
+
+    @classmethod
+    def make_path(cls, path):
+         if not os.path.exists(path):
+             os.mkdir(path)
+         return path
+    
 class CaseStrategy:
     def __init__(self,case_path,case_pattern):
         self.case_path = case_path
@@ -67,12 +72,8 @@ class CaseStrategy:
 class RunCases:
 
     def __init__(self):
-        self.reportRoot = os.path.join(os.getcwd(), 'report')
-        if not os.path.exists(self.reportRoot):
-            os.mkdir(self.reportRoot)
-        self.reportPath = os.path.join(self.reportRoot, report_time)
-        if not os.path.exists(self.reportPath):
-            os.mkdir(self.reportPath)
+        self.reportRoot = Method.make_path(os.path.join(os.getcwd(), 'report'))
+        self.reportPath = Method.make_path(os.path.join(self.reportRoot, report_time))
         self.file_name = os.path.join(self.reportPath, 'report.html')
 
     def run(self, cases):
